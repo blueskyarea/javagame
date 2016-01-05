@@ -11,36 +11,41 @@ import javax.swing.JPanel;
 public class MainPanel extends JPanel implements Runnable, KeyListener {
 	public static final int WIDTH = 360;
 	public static final int HEIGHT = 480;
-	
+
 	private Thread mainThread;
 	private Racket racket;
-	
+	private Ball ball;
+
 	private boolean leftPressed;
 	private boolean rightPressed;
-	
+
 	public MainPanel() {
 		setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		setFocusable(true);
-		
+
 		addKeyListener(this);
-		
+
 		racket = new Racket();
-		
+		ball = new Ball();
+
 		mainThread = new Thread(this);
 		mainThread.start();
 	}
-	
+
 	public void run() {
-		while(true) {
+		while (true) {
 			// move racket
 			if (leftPressed) {
 				racket.move(-racket.getVx());
-			} else if(rightPressed) {
+			} else if (rightPressed) {
 				racket.move(racket.getVx());
 			}
-			
+
+			// move ball
+			ball.move();
+
 			repaint();
-			
+
 			try {
 				Thread.sleep(20);
 			} catch (InterruptedException e) {
@@ -48,14 +53,15 @@ public class MainPanel extends JPanel implements Runnable, KeyListener {
 			}
 		}
 	}
-	
+
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		
+
 		g.setColor(Color.BLACK);
 		g.fillRect(0, 0, WIDTH, HEIGHT);
-		
+
 		racket.draw(g);
+		ball.draw(g);
 	}
 
 	public void keyTyped(KeyEvent e) {
@@ -64,7 +70,7 @@ public class MainPanel extends JPanel implements Runnable, KeyListener {
 
 	public void keyPressed(KeyEvent e) {
 		int keyCode = e.getKeyCode();
-		
+
 		if (keyCode == KeyEvent.VK_LEFT) {
 			leftPressed = true;
 		}
@@ -75,7 +81,7 @@ public class MainPanel extends JPanel implements Runnable, KeyListener {
 
 	public void keyReleased(KeyEvent e) {
 		int keyCode = e.getKeyCode();
-		
+
 		if (keyCode == KeyEvent.VK_LEFT) {
 			leftPressed = false;
 		}
@@ -84,5 +90,4 @@ public class MainPanel extends JPanel implements Runnable, KeyListener {
 		}
 	}
 
-	
 }
