@@ -3,12 +3,14 @@ package com.blueskyarea;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 import javax.swing.JPanel;
 
 public class MainPanel extends JPanel implements Runnable, KeyListener {
+	private static final long serialVersionUID = 3437002139017470077L;
 	public static final int WIDTH = 360;
 	public static final int HEIGHT = 480;
 
@@ -44,7 +46,12 @@ public class MainPanel extends JPanel implements Runnable, KeyListener {
 			// move ball
 			ball.move();
 
+			if (racket.collideWith(ball)) {
+				ball.boundY();
+			}
+
 			repaint();
+			Toolkit.getDefaultToolkit().sync();
 
 			try {
 				Thread.sleep(20);

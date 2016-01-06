@@ -2,6 +2,7 @@ package com.blueskyarea;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Rectangle;
 
 public class Racket {
 	public static final int WIDTH = 80;
@@ -30,6 +31,19 @@ public class Racket {
 		if (centerPos + WIDTH / 2 > MainPanel.WIDTH) {
 			centerPos = MainPanel.WIDTH - WIDTH / 2;
 		}
+	}
+
+	public boolean collideWith(Ball ball) {
+		Rectangle racketRect = new Rectangle(centerPos - WIDTH / 2, MainPanel.HEIGHT - HEIGHT,
+				WIDTH, HEIGHT);
+
+		Rectangle ballRect = new Rectangle(ball.getX(), ball.getY(), ball.getSize(), ball.getSize());
+
+		if (racketRect.intersects(ballRect)) {
+			return true;
+		}
+
+		return false;
 	}
 
 	public int getVx() {

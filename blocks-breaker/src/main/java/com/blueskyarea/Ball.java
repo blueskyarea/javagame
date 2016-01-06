@@ -42,9 +42,22 @@ public class Ball {
 		if (y < 0) {
 			y = 0;
 			vy = -vy;
-		} else if (y > MainPanel.HEIGHT) {
-			y = MainPanel.HEIGHT;
-			vy = -vy;
 		}
+	}
+
+	public void boundY() {
+		vy = -vy;
+	}
+
+	public int getX() {
+		return x;
+	}
+
+	public int getY() {
+		return y;
+	}
+
+	public int getSize() {
+		return SIZE;
 	}
 }
