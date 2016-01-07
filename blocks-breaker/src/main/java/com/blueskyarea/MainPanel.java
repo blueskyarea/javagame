@@ -3,6 +3,7 @@ package com.blueskyarea;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -21,6 +22,10 @@ public class MainPanel extends JPanel implements Runnable, KeyListener {
 	private boolean leftPressed;
 	private boolean rightPressed;
 
+	// ダブルバッファリング（db）用
+	private Graphics dbg;
+	private Image dbImage = null;
+
 	public MainPanel() {
 		setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		setFocusable(true);
@@ -36,22 +41,11 @@ public class MainPanel extends JPanel implements Runnable, KeyListener {
 
 	public void run() {
 		while (true) {
-			// move racket
-			if (leftPressed) {
-				racket.move(-racket.getVx());
-			} else if (rightPressed) {
-				racket.move(racket.getVx());
-			}
+			gameUpdate();
 
-			// move ball
-			ball.move();
+			gameRender();
 
-			if (racket.collideWith(ball)) {
-				ball.boundY();
-			}
-
-			repaint();
-			Toolkit.getDefaultToolkit().sync();
+			paintScreen();
 
 			try {
 				Thread.sleep(20);
@@ -61,14 +55,54 @@ public class MainPanel extends JPanel implements Runnable, KeyListener {
 		}
 	}
 
-	public void paintComponent(Graphics g) {
-		super.paintComponent(g);
+	private void gameUpdate() {
+		// move racket
+		if (leftPressed) {
+			racket.move(-racket.getVx());
+		} else if (rightPressed) {
+			racket.move(racket.getVx());
+		}
 
-		g.setColor(Color.BLACK);
-		g.fillRect(0, 0, WIDTH, HEIGHT);
+		// move ball
+		ball.move();
 
-		racket.draw(g);
-		ball.draw(g);
+		if (racket.collideWith(ball)) {
+			ball.boundY();
+		}
+	}
+
+	private void gameRender() {
+		if (dbImage == null) {
+			dbImage = createImage(WIDTH, HEIGHT);
+			if (dbImage == null) {
+				System.out.println("dbImage is null");
+				return;
+			} else {
+				dbg = dbImage.getGraphics();
+			}
+		}
+
+		// buffer clear
+		dbg.setColor(Color.BLACK);
+		dbg.fillRect(0, 0, WIDTH, HEIGHT);
+
+		racket.draw(dbg);
+		ball.draw(dbg);
+	}
+
+	private void paintScreen() {
+		try {
+			Graphics g = getGraphics();
+			if ((g != null) && (dbImage != null)) {
+				g.drawImage(dbImage, 0, 0, null);
+			}
+			Toolkit.getDefaultToolkit().sync();
+			if (g != null) {
+				g.dispose();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void keyTyped(KeyEvent e) {
