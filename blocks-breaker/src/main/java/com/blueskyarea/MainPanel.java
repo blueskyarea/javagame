@@ -15,9 +15,14 @@ public class MainPanel extends JPanel implements Runnable, KeyListener {
 	public static final int WIDTH = 360;
 	public static final int HEIGHT = 480;
 
+	private static final int NUM_BLOCK_ROW = 10;
+	private static final int NUM_BLOCK_COL = 7;
+	private static final int NUM_BLOCK = NUM_BLOCK_ROW * NUM_BLOCK_COL;
+
 	private Thread mainThread;
 	private Racket racket;
 	private Ball ball;
+	private Block[] block;
 
 	private boolean leftPressed;
 	private boolean rightPressed;
@@ -34,6 +39,16 @@ public class MainPanel extends JPanel implements Runnable, KeyListener {
 
 		racket = new Racket();
 		ball = new Ball();
+		block = new Block[NUM_BLOCK];
+
+		// Create blocks
+		for (int i = 0; i < NUM_BLOCK_ROW; i++) {
+			for (int j = 0; j < NUM_BLOCK_COL; j++) {
+				int x = j * Block.WIDTH + Block.WIDTH;
+				int y = i * Block.HEIGHT + Block.HEIGHT;
+				block[i * NUM_BLOCK_COL + j] = new Block(x, y);
+			}
+		}
 
 		mainThread = new Thread(this);
 		mainThread.start();
@@ -66,9 +81,39 @@ public class MainPanel extends JPanel implements Runnable, KeyListener {
 		// move ball
 		ball.move();
 
+		// racket collide with ball
 		if (racket.collideWith(ball)) {
 			ball.boundY();
 		}
+
+		// block collide with ball
+		for (int i = 0; i < NUM_BLOCK; i++) {
+			if (!block[i].isActive()) {
+				continue;
+			}
+			int collidePos = block[i].collideWith(ball);
+			if (collidePos != Block.NO_COLLISION) {
+				block[i].delete();
+				switch (collidePos) {
+				case Block.DOWN:
+				case Block.UP:
+					ball.boundY();
+					break;
+				case Block.LEFT:
+				case Block.RIGHT:
+					ball.boundX();
+					break;
+				case Block.UP_LEFT:
+				case Block.UP_RIGHT:
+				case Block.DOWN_LEFT:
+				case Block.DOWN_RIGHT:
+					ball.boundXY();
+					break;
+				}
+				break; // break block one by one.
+			}
+		}
+
 	}
 
 	private void gameRender() {
@@ -88,6 +133,11 @@ public class MainPanel extends JPanel implements Runnable, KeyListener {
 
 		racket.draw(dbg);
 		ball.draw(dbg);
+		for (int i = 0; i < NUM_BLOCK; i++) {
+			if (block[i].isActive()) {
+				block[i].draw(dbg);
+			}
+		}
 	}
 
 	private void paintScreen() {

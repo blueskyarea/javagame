@@ -16,7 +16,7 @@ public class Ball {
 		rand = new Random(System.currentTimeMillis());
 
 		x = rand.nextInt(MainPanel.WIDTH - SIZE);
-		y = 0;
+		y = MainPanel.HEIGHT / 2;
 
 		vx = 5;
 		vy = 5;
@@ -45,7 +45,16 @@ public class Ball {
 		}
 	}
 
+	public void boundX() {
+		vx = -vx;
+	}
+
 	public void boundY() {
+		vy = -vy;
+	}
+
+	public void boundXY() {
+		vx = -vx;
 		vy = -vy;
 	}
 
