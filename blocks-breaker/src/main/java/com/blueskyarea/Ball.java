@@ -66,6 +66,10 @@ public class Ball {
 		return y;
 	}
 
+	public int getVX() {
+		return vx;
+	}
+
 	public int getSize() {
 		return SIZE;
 	}

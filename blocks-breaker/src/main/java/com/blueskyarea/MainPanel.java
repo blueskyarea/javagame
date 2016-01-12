@@ -82,8 +82,22 @@ public class MainPanel extends JPanel implements Runnable, KeyListener {
 		ball.move();
 
 		// racket collide with ball
-		if (racket.collideWith(ball)) {
-			ball.boundY();
+		int collideRacketPos = racket.collideWith(ball);
+		if (collideRacketPos != Racket.NO_COLLISION) {
+			switch (collideRacketPos) {
+			case Racket.LEFT:
+				if (ball.getVX() > 0) {
+					ball.boundX();
+				}
+				ball.boundY();
+				break;
+			case Racket.RIGHT:
+				if (ball.getVX() < 0) {
+					ball.boundX();
+				}
+				ball.boundY();
+				break;
+			}
 		}
 
 		// block collide with ball

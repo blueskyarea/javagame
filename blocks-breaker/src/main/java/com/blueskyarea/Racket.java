@@ -7,6 +7,9 @@ import java.awt.Rectangle;
 public class Racket {
 	public static final int WIDTH = 80;
 	public static final int HEIGHT = 5;
+	public static final int NO_COLLISION = 0;
+	public static final int LEFT = 1;
+	public static final int RIGHT = 2;
 
 	private int centerPos;
 	private int vx;
@@ -33,17 +36,25 @@ public class Racket {
 		}
 	}
 
-	public boolean collideWith(Ball ball) {
-		Rectangle racketRect = new Rectangle(centerPos - WIDTH / 2, MainPanel.HEIGHT - HEIGHT,
-				WIDTH, HEIGHT);
+	public int collideWith(Ball ball) {
+		// racket
+		Rectangle racketRectLeft = new Rectangle(centerPos - WIDTH / 2, MainPanel.HEIGHT - HEIGHT,
+				WIDTH / 2, HEIGHT);
 
+		Rectangle racketRectRight = new Rectangle(centerPos, MainPanel.HEIGHT - HEIGHT, WIDTH / 2,
+				HEIGHT);
+
+		// ball
 		Rectangle ballRect = new Rectangle(ball.getX(), ball.getY(), ball.getSize(), ball.getSize());
 
-		if (racketRect.intersects(ballRect)) {
-			return true;
+		if (racketRectLeft.intersects(ballRect)) {
+			return LEFT;
+		}
+		if (racketRectRight.intersects(ballRect)) {
+			return RIGHT;
 		}
 
-		return false;
+		return NO_COLLISION;
 	}
 
 	public int getVx() {
